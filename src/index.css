@@ -1,0 +1,69 @@
+body {
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+		'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	padding: 20px;
+	background-color: #053463;
+}
+
+.app-title {
+	text-align: center;
+	color: #ffffff;
+	margin-bottom: 20px;
+}
+
+.todos-list {
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.todo-item {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid #dee2e6;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item input[type='checkbox'] {
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.todo-item label {
+	flex: 1;
+	font-size: 16px;
+}
+
+.todo-item.completed label {
+	text-decoration: line-through;
+	color: #6c757d;
+}
+
+.loader {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 25px;
+	height: 25px;
+	border: 5px solid rgb(255, 255, 255);
+	border-radius: 50%;
+	border-left-color: transparent;
+	animation: loader 1s infinite;
+}
+
+@keyframes loader {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
