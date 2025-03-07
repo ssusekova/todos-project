@@ -4,6 +4,8 @@ export const useRequestCreateNewTodo = (setRefreshTodos) => {
 	const [newTodoTitle, setNewTodoTitle] = useState('');
 
 	const createNewTodo = (todoTitle) => {
+		if (!todoTitle) return;
+
 		fetch('http://localhost:5050/todos', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },

@@ -13,8 +13,10 @@ export const App = () => {
 
 	const [editTodoTitle, setEditTodoTitle] = useState('');
 	const [editingTodoId, setEditingTodoId] = useState(null);
+	const [searchText, setSearchText] = useState('');
+	const [highlightedTodoId, setHighlightedTodo] = useState([]);
 
-	const { todos, isLoading, refreshTodoList } = useRequestGetTodos();
+	const { todos, isLoading, refreshTodoList, sortTodos } = useRequestGetTodos();
 	const { applyChangesOfTodo } = useRequestApplyChangesOfTodo(
 		refreshTodoList,
 		setEditingTodoId,
@@ -30,9 +32,32 @@ export const App = () => {
 		setEditTodoTitle(todoTitle);
 		editInputRef.current.focus();
 	};
+
+	const getSearchedTodos = () => {
+		const filteredTodos = todos.filter((todo) =>
+			todo.title.toLowerCase().includes(searchText.toLowerCase()),
+		);
+		setHighlightedTodo(filteredTodos);
+	};
+
 	return (
 		<>
 			<h1 className="app-title">Список дел</h1>
+
+			<div className="search-bar">
+				<input
+					type="text"
+					className="search-input"
+					placeholder="Поиск"
+					value={searchText}
+					onChange={(e) => setSearchText(e.target.value)}
+				/>
+				<button className="button-todo-item-action" onClick={getSearchedTodos}>
+					🔍
+				</button>
+				<button className="sort-button" onClick={sortTodos} />
+			</div>
+
 			{isLoading ? (
 				<div className="loader"></div>
 			) : (
@@ -40,7 +65,12 @@ export const App = () => {
 					{todos.map(({ id, title, completed }) => (
 						<div
 							key={id}
-							className={`todo-item ${completed ? 'completed' : ''}`}
+							className={`todo-item ${completed ? 'completed' : ''} ${
+								// Подсветка, если элемент попал в фильтр
+								highlightedTodoId.some((todo) => todo.id === id)
+									? 'highlighted'
+									: ''
+							}`}
 						>
 							<input
 								type="checkbox"
@@ -55,32 +85,24 @@ export const App = () => {
 								value={editingTodoId === id ? editTodoTitle : title}
 								onChange={(e) => setEditTodoTitle(e.target.value)}
 								readOnly={editingTodoId !== id}
-							></input>
+							/>
 
 							{editingTodoId === id ? (
-								<>
-									<button
-										className="button-todo-item-action"
-										onClick={() =>
-											applyChangesOfTodo(
-												id,
-												editTodoTitle,
-												completed,
-											)
-										}
-									>
-										✔️
-									</button>
-								</>
+								<button
+									className="button-todo-item-action"
+									onClick={() =>
+										applyChangesOfTodo(id, editTodoTitle, completed)
+									}
+								>
+									✔️
+								</button>
 							) : (
-								<>
-									<button
-										className="button-todo-item-action"
-										onClick={() => editTodo(id, title)}
-									>
-										🖋️
-									</button>
-								</>
+								<button
+									className="button-todo-item-action"
+									onClick={() => editTodo(id, title)}
+								>
+									🖋️
+								</button>
 							)}
 
 							<button
@@ -100,7 +122,7 @@ export const App = () => {
 							placeholder="Новое дело"
 							value={newTodoTitle}
 							onChange={(e) => setNewTodoTitle(e.target.value)}
-						></input>
+						/>
 						<button
 							className="button-todo-item-action"
 							onClick={() => createNewTodo(newTodoTitle)}

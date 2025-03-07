@@ -20,5 +20,13 @@ export const useRequestGetTodos = () => {
 		setRefreshTodos(!refreshTodos);
 	};
 
-	return { todos, isLoading, refreshTodoList };
+	const sortTodos = () => {
+		const sortedTodos = [...todos].sort((a, b) =>
+			a.title.toLowerCase().localeCompare(b.title.toLowerCase()),
+		);
+
+		setTodos(sortedTodos);
+	};
+
+	return { todos, isLoading, refreshTodoList, sortTodos };
 };
