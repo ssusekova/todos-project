@@ -59,14 +59,13 @@ export const App = () => {
 			</div>
 
 			{isLoading ? (
-				<div className="loader"></div>
+				<div className="loader" />
 			) : (
 				<div className="todos-list">
 					{todos.map(({ id, title, completed }) => (
 						<div
 							key={id}
 							className={`todo-item ${completed ? 'completed' : ''} ${
-								// Подсветка, если элемент попал в фильтр
 								highlightedTodoId.some((todo) => todo.id === id)
 									? 'highlighted'
 									: ''
