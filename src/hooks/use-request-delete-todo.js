@@ -1,14 +1,13 @@
-export const useRequestDeleteTodo = (setRefreshTodos) => {
+import { ref, remove } from 'firebase/database';
+import { db } from '../firebase';
+
+export const useRequestDeleteTodo = () => {
 	const deleteTodo = (todoId) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'DELETE',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Todo удален, ответ сервера:', response);
-				setRefreshTodos();
-			});
+		const todosDbRef = ref(db, 'todos/'.concat(todoId));
+
+		remove(todosDbRef).then((response) => {
+			console.log('Todo удален, ответ сервера:', response);
+		});
 	};
 
 	return { deleteTodo };

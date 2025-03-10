@@ -1,17 +1,15 @@
-export const useRequestChangeStatusOfCompleteTodo = (setRefreshTodos) => {
+import { ref, update } from 'firebase/database';
+import { db } from '../firebase';
+
+export const useRequestChangeStatusOfCompleteTodo = () => {
 	const changeStatusOfCompleteTodo = (todoId, isCompleted) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({
-				completed: !isCompleted,
-			}),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Статус Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
-			});
+		const todosDbRef = ref(db, 'todos/'.concat(todoId));
+
+		update(todosDbRef, {
+			completed: !isCompleted,
+		}).then((response) => {
+			console.log('Статус Todo обновлён, ответ сервера:', response);
+		});
 	};
 
 	return { changeStatusOfCompleteTodo };

@@ -16,16 +16,11 @@ export const App = () => {
 	const [searchText, setSearchText] = useState('');
 	const [highlightedTodoId, setHighlightedTodo] = useState([]);
 
-	const { todos, isLoading, refreshTodoList, sortTodos } = useRequestGetTodos();
-	const { applyChangesOfTodo } = useRequestApplyChangesOfTodo(
-		refreshTodoList,
-		setEditingTodoId,
-	);
-	const { changeStatusOfCompleteTodo } =
-		useRequestChangeStatusOfCompleteTodo(refreshTodoList);
-	const { deleteTodo } = useRequestDeleteTodo(refreshTodoList);
-	const { createNewTodo, newTodoTitle, setNewTodoTitle } =
-		useRequestCreateNewTodo(refreshTodoList);
+	const { todos, isLoading, sortTodos } = useRequestGetTodos();
+	const { applyChangesOfTodo } = useRequestApplyChangesOfTodo(setEditingTodoId);
+	const { changeStatusOfCompleteTodo } = useRequestChangeStatusOfCompleteTodo();
+	const { deleteTodo } = useRequestDeleteTodo();
+	const { createNewTodo, newTodoTitle, setNewTodoTitle } = useRequestCreateNewTodo();
 
 	const editTodo = (todoId, todoTitle) => {
 		setEditingTodoId(todoId);
@@ -62,7 +57,7 @@ export const App = () => {
 				<div className="loader" />
 			) : (
 				<div className="todos-list">
-					{todos.map(({ id, title, completed }) => (
+					{Object.entries(todos).map(([id, { title, completed }]) => (
 						<div
 							key={id}
 							className={`todo-item ${completed ? 'completed' : ''} ${

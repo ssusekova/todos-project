@@ -1,18 +1,16 @@
-export const useRequestApplyChangesOfTodo = (setRefreshTodos, setEditingTodoId) => {
+import { ref, set } from 'firebase/database';
+import { db } from '../firebase';
+
+export const useRequestApplyChangesOfTodo = (setEditingTodoId) => {
 	const applyChangesOfTodo = (todoId, editTodoTitle, isCompleted) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({
-				title: editTodoTitle,
-				completed: isCompleted,
-			}),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
-			});
+		const todosDbRef = ref(db, 'todos/'.concat(todoId));
+
+		set(todosDbRef, {
+			title: editTodoTitle,
+			completed: isCompleted,
+		}).then((response) => {
+			console.log('Todo обновлён, ответ сервера:', response);
+		});
 		setEditingTodoId(null);
 	};
 
