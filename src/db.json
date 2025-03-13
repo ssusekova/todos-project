@@ -1,3 +1,9 @@
 {
-  "todos": []
+  "todos": [
+    {
+      "title": "Первое дело",
+      "completed": false,
+      "id": 1
+    }
+  ]
 }

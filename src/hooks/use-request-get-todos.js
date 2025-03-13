@@ -30,3 +30,18 @@ export const useRequestGetTodos = () => {
 
 	return { todos, isLoading, refreshTodoList, sortTodos };
 };
+
+export const useRequestGetTodoById = (id) => {
+	const [item, setItem] = useState([]);
+
+	useEffect(() => {
+		fetch('http://localhost:5050/todos/'.concat(id))
+			.then((response) => response.json())
+			.then((json) => {
+				setItem(json);
+				// console.log(json);
+			});
+	});
+
+	return { item };
+};
