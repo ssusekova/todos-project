@@ -144,3 +144,10 @@ body {
 	border: none;
 	cursor: pointer;
 }
+
+.todo_form {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	gap: 10px;
+}
