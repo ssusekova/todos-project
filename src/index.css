@@ -27,8 +27,6 @@ body {
 	background-color: #f0f0f0;
 	border-radius: 10px;
 	display: flex;
-	gap: 10px;
-	/* margin-right: 20px; */
 }
 
 .search-input {
@@ -41,17 +39,6 @@ body {
 .search-input:focus {
 	border: none;
 	outline: none;
-}
-
-.todo-item {
-	display: flex;
-	align-items: center;
-	padding: 10px;
-	border: 1px solid #dee2e6;
-	border-radius: 5px;
-	margin-bottom: 10px;
-	background-color: #ffffff;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .todo-item input[type='checkbox'] {
@@ -114,14 +101,12 @@ body {
 	}
 }
 
-.button-todo-item-action {
-	border: none;
-	background-color: transparent;
-	cursor: pointer;
-}
-
 .todo-text {
 	border: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
 }
 
 .todo-text:focus {
@@ -143,4 +128,102 @@ body {
 	width: 20px;
 	border: none;
 	cursor: pointer;
+}
+
+.info-message {
+	color: white;
+	font-size: x-large;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.todo-item-container {
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.todo-item {
+	display: flex;
+	align-items: flex-start;
+	padding: 10px;
+	border: 1px solid #dee2e6;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.todo-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.todo-form {
+	display: flex;
+	flex: 1;
+	position: relative;
+}
+
+.input-wrapper {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.todo-full-text {
+	flex: 1;
+	border: none;
+	padding: 8px;
+	min-width: 0;
+	word-break: break-word;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+	resize: none;
+	min-height: 20px;
+}
+
+.action-button {
+	margin-left: auto;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.delete-button {
+	margin-left: auto;
+	padding: 8px 12px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.todo-item.completed .todo-full-text {
+	text-decoration: line-through;
+	color: #6c757d;
+}
+
+.todo-full-text:focus {
+	outline: 2px solid #007bff;
+	outline-offset: 2px;
+}
+
+.button-back {
+	background-color: #6e7985;
+	color: white;
+	padding: 8px 16px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 12px;
+
+	transition: background-color 0.3s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

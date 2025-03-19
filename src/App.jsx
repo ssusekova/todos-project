@@ -1,147 +1,67 @@
-import { Routes, Route } from 'react-router';
-// import { useState, useRef } from 'react';
+import { Routes, Route, Navigate } from 'react-router';
+import { useState } from 'react';
 import './index.css';
-import { MainPage } from './pages/MainPage';
-import { TodoItemPage } from './pages/TodoItemPage';
-
-// import {
-// 	useRequestApplyChangesOfTodo,
-// 	useRequestChangeStatusOfCompleteTodo,
-// 	useRequestDeleteTodo,
-// 	useRequestCreateNewTodo,
-// 	useRequestGetTodos,
-// } from './hooks';
+import { TodosList } from './components/TodosList';
+import { TodoItem } from './components/TodoItem';
+import { ControlPanel } from './components/ControlPanel';
+import { useRequestGetTodos } from './hooks';
+import { getSortedTodos, getSearchedTodos } from './utils';
 
 export const App = () => {
-	// const editInputRef = useRef(null);
+	const [sortedTodos, setSortedTodos] = useState([]);
+	const [searchInfo, setSearchInfo] = useState({});
+	const [isSorting, setIsSorting] = useState(false);
 
-	// const [editTodoTitle, setEditTodoTitle] = useState('');
-	// const [editingTodoId, setEditingTodoId] = useState(null);
-	// const [searchText, setSearchText] = useState('');
-	// const [highlightedTodoId, setHighlightedTodo] = useState([]);
+	const { todos, isLoading, refreshTodoList } = useRequestGetTodos();
 
-	// const { todos, isLoading, refreshTodoList, sortTodos } = useRequestGetTodos();
-	// const { applyChangesOfTodo } = useRequestApplyChangesOfTodo(
-	// 	refreshTodoList,
-	// 	setEditingTodoId,
-	// );
-	// const { changeStatusOfCompleteTodo } =
-	// 	useRequestChangeStatusOfCompleteTodo(refreshTodoList);
-	// const { deleteTodo } = useRequestDeleteTodo(refreshTodoList);
-	// const { createNewTodo, newTodoTitle, setNewTodoTitle } =
-	// 	useRequestCreateNewTodo(refreshTodoList);
+	const getSortedList = () => {
+		const newIsSorting = !isSorting;
+		setIsSorting(newIsSorting);
+		setSortedTodos(getSortedTodos(todos, newIsSorting));
+	};
+	const getSearchInfo = (searchText) => {
+		const { isSearching, searchedTodos } = getSearchedTodos(todos, searchText);
+		setSearchInfo({ isSearching, searchedTodos });
+	};
 
-	// const editTodo = (todoId, todoTitle) => {
-	// 	setEditingTodoId(todoId);
-	// 	setEditTodoTitle(todoTitle);
-	// 	editInputRef.current.focus();
-	// };
+	const todoList = sortedTodos.length > 0 ? sortedTodos : todos;
 
-	// const getSearchedTodos = () => {
-	// 	const filteredTodos = todos.filter((todo) =>
-	// 		todo.title.toLowerCase().includes(searchText.toLowerCase()),
-	// 	);
-	// 	setHighlightedTodo(filteredTodos);
-	// };
-
-	// const MainPage = () => (
-	// 	<>
-	// 		<h1 className="app-title">Список дел</h1>
-
-	// 		<div className="search-bar">
-	// 			<input
-	// 				type="text"
-	// 				className="search-input"
-	// 				placeholder="Поиск"
-	// 				value={searchText}
-	// 				onChange={(e) => setSearchText(e.target.value)}
-	// 			/>
-	// 			<button className="button-todo-item-action" onClick={getSearchedTodos}>
-	// 				🔍
-	// 			</button>
-	// 			<button className="sort-button" onClick={sortTodos} />
-	// 		</div>
-
-	// 		{isLoading ? (
-	// 			<div className="loader" />
-	// 		) : (
-	// 			<div className="todos-list">
-	// 				{todos.map(({ id, title, completed }) => (
-	// 					<div
-	// 						key={id}
-	// 						className={`todo-item ${completed ? 'completed' : ''} ${
-	// 							highlightedTodoId.some((todo) => todo.id === id)
-	// 								? 'highlighted'
-	// 								: ''
-	// 						}`}
-	// 					>
-	// 						<input
-	// 							type="checkbox"
-	// 							key={id}
-	// 							checked={completed}
-	// 							onChange={() => changeStatusOfCompleteTodo(id, completed)}
-	// 						/>
-	// 						<input
-	// 							type="text"
-	// 							className="todo-text"
-	// 							ref={editInputRef}
-	// 							value={editingTodoId === id ? editTodoTitle : title}
-	// 							onChange={(e) => setEditTodoTitle(e.target.value)}
-	// 							readOnly={editingTodoId !== id}
-	// 						/>
-
-	// 						{editingTodoId === id ? (
-	// 							<button
-	// 								className="button-todo-item-action"
-	// 								onClick={() =>
-	// 									applyChangesOfTodo(id, editTodoTitle, completed)
-	// 								}
-	// 							>
-	// 								✔️
-	// 							</button>
-	// 						) : (
-	// 							<button
-	// 								className="button-todo-item-action"
-	// 								onClick={() => editTodo(id, title)}
-	// 							>
-	// 								🖋️
-	// 							</button>
-	// 						)}
-
-	// 						<button
-	// 							className="button-todo-item-action"
-	// 							onClick={() => deleteTodo(id)}
-	// 						>
-	// 							❌
-	// 						</button>
-	// 					</div>
-	// 				))}
-
-	// 				<div className="new-todo-item">
-	// 					<input type="checkbox" readOnly />
-	// 					<input
-	// 						type="text"
-	// 						className="todo-text"
-	// 						placeholder="Новое дело"
-	// 						value={newTodoTitle}
-	// 						onChange={(e) => setNewTodoTitle(e.target.value)}
-	// 					/>
-	// 					<button
-	// 						className="button-todo-item-action"
-	// 						onClick={() => createNewTodo(newTodoTitle)}
-	// 					>
-	// 						➕
-	// 					</button>
-	// 				</div>
-	// 			</div>
-	// 		)}
-	// 	</>
-	// );
+	const NotFound = () => (
+		<div className="info-message">Такая страница не существует</div>
+	);
+	const LoadError = () => (
+		<div className="info-message">
+			Упс, не удалось загрузить запрашиваемую информацию
+		</div>
+	);
 
 	return (
 		<Routes>
-			<Route path="/" element={<MainPage />} />
-			<Route path="/item:id" element={<TodoItemPage />} />
+			<Route
+				path="/"
+				element={
+					<>
+						<h1 className="app-title">Список дел</h1>
+						<ControlPanel
+							getSearchedTodos={getSearchInfo}
+							getSortedList={getSortedList}
+						/>
+						<TodosList
+							todos={todoList}
+							isLoading={isLoading}
+							refreshTodoList={refreshTodoList}
+							searchInfo={searchInfo}
+						/>
+					</>
+				}
+			/>
+			<Route
+				path="task/:id"
+				element={<TodoItem refreshTodoList={refreshTodoList} />}
+			/>
+			<Route path="/load-error" element={<LoadError />} />
+			<Route path="/404" element={<NotFound />} />
+			<Route path="*" element={<Navigate to="/404" />} />
 		</Routes>
 	);
 };

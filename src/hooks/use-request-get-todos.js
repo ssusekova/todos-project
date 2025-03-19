@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 export const useRequestGetTodos = () => {
 	const [todos, setTodos] = useState([]);
@@ -32,16 +33,40 @@ export const useRequestGetTodos = () => {
 };
 
 export const useRequestGetTodoById = (id) => {
-	const [item, setItem] = useState([]);
+	const LOADING_TIMEOUT = 1000;
+
+	const navigate = useNavigate();
+
+	const [item, setItem] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [refreshItem, setRefreshItem] = useState(false);
 
 	useEffect(() => {
-		fetch('http://localhost:5050/todos/'.concat(id))
-			.then((response) => response.json())
-			.then((json) => {
-				setItem(json);
-				// console.log(json);
-			});
-	});
+		const timeoutId = setTimeout(() => {
+			navigate('/load-error');
+		}, LOADING_TIMEOUT);
 
-	return { item };
+		setIsLoading(true);
+		fetch(`http://localhost:5050/todos/${id}`)
+			.then((response) => {
+				if (!response.ok) {
+					return navigate('/load-error');
+				}
+				return response.json();
+			})
+			.then((json) => {
+				setIsLoading(false);
+				setItem(json);
+				clearTimeout(timeoutId);
+			})
+			.catch(() => {
+				navigate('/not-exist');
+			});
+	}, [id, navigate, refreshItem]);
+
+	const refreshItemInfo = () => {
+		setRefreshItem(!refreshItem);
+	};
+
+	return { item, isLoading, refreshItemInfo };
 };

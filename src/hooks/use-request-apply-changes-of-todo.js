@@ -1,19 +1,18 @@
-export const useRequestApplyChangesOfTodo = (setRefreshTodos, setEditingTodoId) => {
-	const applyChangesOfTodo = (todoId, editTodoTitle, isCompleted) => {
+export const useRequestApplyChangesOfTodo = (refreshItemInfo, refreshTodoList) => {
+	const applyChangesOfTodo = (todoId, editTodoTitle) => {
 		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'PUT',
+			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },
 			body: JSON.stringify({
 				title: editTodoTitle,
-				completed: isCompleted,
 			}),
 		})
 			.then((rawResponse) => rawResponse.json())
 			.then((response) => {
 				console.log('Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
+				refreshItemInfo();
+				refreshTodoList();
 			});
-		setEditingTodoId(null);
 	};
 
 	return { applyChangesOfTodo };
