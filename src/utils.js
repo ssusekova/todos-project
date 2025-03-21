@@ -16,5 +16,6 @@ export const getSearchedTodos = (todos, searchText) => {
 	const filteredTodos = todos.filter((todo) =>
 		todo.title.toLowerCase().includes(searchText.toLowerCase()),
 	);
+
 	return { isSearching: true, searchedTodos: filteredTodos };
 };

@@ -1,4 +1,9 @@
-export const useRequestApplyChangesOfTodo = (setRefreshTodos, setEditingTodoId) => {
+import { useContext } from 'react';
+import { AppContext } from '../context.js';
+
+export const useRequestApplyChangesOfTodo = (setEditingTodoId) => {
+	const { refreshTodos } = useContext(AppContext);
+
 	const applyChangesOfTodo = (todoId, editTodoTitle, isCompleted) => {
 		fetch('http://localhost:5050/todos/'.concat(todoId), {
 			method: 'PUT',
@@ -11,7 +16,7 @@ export const useRequestApplyChangesOfTodo = (setRefreshTodos, setEditingTodoId) 
 			.then((rawResponse) => rawResponse.json())
 			.then((response) => {
 				console.log('Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
+				refreshTodos();
 			});
 		setEditingTodoId(null);
 	};

@@ -1,4 +1,9 @@
-export const useRequestDeleteTodo = (setRefreshTodos) => {
+import { useContext } from 'react';
+import { AppContext } from '../context.js';
+
+export const useRequestDeleteTodo = () => {
+	const { refreshTodos } = useContext(AppContext);
+
 	const deleteTodo = (todoId) => {
 		fetch('http://localhost:5050/todos/'.concat(todoId), {
 			method: 'DELETE',
@@ -7,7 +12,7 @@ export const useRequestDeleteTodo = (setRefreshTodos) => {
 			.then((rawResponse) => rawResponse.json())
 			.then((response) => {
 				console.log('Todo удален, ответ сервера:', response);
-				setRefreshTodos();
+				refreshTodos();
 			});
 	};
 

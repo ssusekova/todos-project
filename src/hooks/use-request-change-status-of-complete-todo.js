@@ -1,4 +1,9 @@
-export const useRequestChangeStatusOfCompleteTodo = (setRefreshTodos) => {
+import { useContext } from 'react';
+import { AppContext } from '../context.js';
+
+export const useRequestChangeStatusOfCompleteTodo = () => {
+	const { refreshTodos } = useContext(AppContext);
+
 	const changeStatusOfCompleteTodo = (todoId, isCompleted) => {
 		fetch('http://localhost:5050/todos/'.concat(todoId), {
 			method: 'PATCH',
@@ -10,7 +15,7 @@ export const useRequestChangeStatusOfCompleteTodo = (setRefreshTodos) => {
 			.then((rawResponse) => rawResponse.json())
 			.then((response) => {
 				console.log('Статус Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
+				refreshTodos();
 			});
 	};
 

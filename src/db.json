@@ -1,3 +1,14 @@
 {
-  "todos": []
+  "todos": [
+    {
+      "title": "новое дело",
+      "completed": false,
+      "id": 1
+    },
+    {
+      "title": "второе дело",
+      "completed": false,
+      "id": 2
+    }
+  ]
 }

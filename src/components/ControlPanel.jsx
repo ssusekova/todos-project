@@ -1,12 +1,22 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useContext } from 'react';
+import { AppContext } from '../context.js';
 
-export const ControlPanel = ({ getSearchedTodos, getSortedList }) => {
+export const ControlPanel = () => {
+	const { dispatch } = useContext(AppContext);
+
 	const [searchText, setSearchText] = useState('');
+	const [isSorting, setIsSorting] = useState(false);
 
 	const handleSearch = (searchedText) => {
 		setSearchText(searchedText);
-		getSearchedTodos(searchedText);
+		dispatch({ type: 'SET_SEARCH_TODOS', payload: searchedText });
+	};
+
+	const handleSort = () => {
+		const newIsSorting = !isSorting;
+		setIsSorting(newIsSorting);
+		dispatch({ type: 'SET_SORT_TODOS', payload: newIsSorting });
 	};
 
 	return (
@@ -19,12 +29,7 @@ export const ControlPanel = ({ getSearchedTodos, getSortedList }) => {
 				onChange={(e) => handleSearch(e.target.value)}
 			/>
 
-			<button className="sort-button" onClick={getSortedList} />
+			<button className="sort-button" onClick={handleSort} />
 		</div>
 	);
-};
-
-ControlPanel.propTypes = {
-	getSearchedTodos: PropTypes.func.isRequired,
-	getSortedList: PropTypes.func.isRequired,
 };

@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export const useRequestGetTodos = () => {
 	const [todos, setTodos] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const [refreshTodos, setRefreshTodos] = useState(false);
 
-	useEffect(() => {
+	const fetchTodos = useCallback(() => {
 		setIsLoading(true);
-
 		fetch('http://localhost:5050/todos')
 			.then((response) => response.json())
-			.then((json) => {
-				setTodos(json);
-			})
+			.then((json) => setTodos(json))
 			.finally(() => setIsLoading(false));
-	}, [refreshTodos]);
+	}, []);
 
-	const refreshTodoList = () => {
-		setRefreshTodos(!refreshTodos);
+	useEffect(() => {
+		fetchTodos();
+	}, [fetchTodos]);
+
+	const refreshTodos = () => {
+		fetchTodos();
 	};
 
 	return {
 		todos,
 		isLoading,
-		refreshTodoList,
+		refreshTodos,
 	};
 };

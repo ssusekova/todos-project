@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AppContext } from '../context.js';
 
-export const useRequestCreateNewTodo = (setRefreshTodos) => {
+export const useRequestCreateNewTodo = () => {
+	const { refreshTodos } = useContext(AppContext);
 	const [newTodoTitle, setNewTodoTitle] = useState('');
 
 	const createNewTodo = (todoTitle) => {
@@ -17,7 +20,7 @@ export const useRequestCreateNewTodo = (setRefreshTodos) => {
 			.then((rawResponse) => rawResponse.json())
 			.then((response) => {
 				console.log('Todo создан, ответ сервера:', response);
-				setRefreshTodos();
+				refreshTodos();
 				setNewTodoTitle('');
 			});
 	};
