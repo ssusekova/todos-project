@@ -1,94 +1,78 @@
-import { useState } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router';
 import '../index.css';
-import {
-	useRequestApplyChangesOfTodo,
-	useRequestDeleteTodo,
-	useRequestGetTodoById,
-} from '../hooks';
-import PropTypes from 'prop-types';
+import { useParams, useNavigate } from 'react-router';
+import { useRequestGetTodoItem } from '../hooks/use-request-get-todo-item';
+import { useRequestApplyChangesOfTodo, useRequestDeleteTodo } from '../hooks';
 
-export const TodoItem = ({ refreshTodoList }) => {
-	const params = useParams();
+export const TodoItem = () => {
+	const { id } = useParams();
 	const navigate = useNavigate();
 
-	const { item, isLoading, refreshItemInfo } = useRequestGetTodoById(params.id);
-	const [editTodoTitle, setEditTodoTitle] = useState('');
-	const [isEdit, setIsEdit] = useState(false);
+	const { todoItem, setTodoItem, isLoading, error } = useRequestGetTodoItem(id);
 
-	const { applyChangesOfTodo } = useRequestApplyChangesOfTodo(
-		refreshItemInfo,
-		refreshTodoList,
-	);
-	const { deleteTodo } = useRequestDeleteTodo(refreshTodoList);
+	const { changeTodo } = useRequestApplyChangesOfTodo();
+	const { deleteTodoById } = useRequestDeleteTodo(id);
 
-	if (isLoading) return <div>Loading...</div>;
-	if (!item) return <Navigate to="/404" replace />;
-
-	const { id, title } = item;
-
-	const handleEdit = (e) => {
-		e.preventDefault();
-		setIsEdit(true);
-		setEditTodoTitle(title);
-	};
+	if (error) return navigate('/load-error');
 
 	const handleSave = (e) => {
-		e.preventDefault();
-		console.log(editTodoTitle);
-		applyChangesOfTodo(id, editTodoTitle);
-		setIsEdit(false);
+		try {
+			e.preventDefault();
+			changeTodo(todoItem);
+		} catch {
+			navigate('/save-error');
+		}
 	};
 
 	const handleDelete = () => {
-		deleteTodo(id);
-		navigate('/');
+		try {
+			deleteTodoById();
+			navigate('/');
+		} catch {
+			navigate('/save-error');
+		}
+	};
+
+	const handleEditTitle = (newTitle) => {
+		setTodoItem((prevTodo) => ({
+			...prevTodo,
+			title: newTitle,
+		}));
 	};
 
 	return (
-		<div className="todo-item-container">
-			<button className="button-back" onClick={() => navigate(-1)}>
-				Назад
-			</button>
+		<>
+			{isLoading ? (
+				<div className="loader" />
+			) : (
+				<div className="todo-item-container">
+					<button className="button-back" onClick={() => navigate(-1)}>
+						Назад
+					</button>
 
-			<div className="todo-item">
-				<div className="todo-content">
-					<form className="todo-form" onSubmit={handleSave}>
-						<textarea
-							className="todo-full-text"
-							value={isEdit ? editTodoTitle : title}
-							onChange={(e) => setEditTodoTitle(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' && !e.shiftKey) {
-									e.preventDefault();
-									handleSave({ preventDefault: () => {} });
-								}
-							}}
-							readOnly={!isEdit}
-						/>
-						{isEdit ? (
-							<button type="submit" className="action-button">
-								✔️
-							</button>
-						) : (
-							<button
-								type="button"
-								className="action-button"
-								onClick={handleEdit}
-							>
-								🖋️
-							</button>
-						)}
-						<button className="delete-button" onClick={handleDelete}>
-							❌
-						</button>
-					</form>
+					<div className="todo-item">
+						<div className="todo-content">
+							<form className="todo-form" onSubmit={handleSave}>
+								<textarea
+									className="todo-full-text"
+									value={todoItem?.title}
+									onChange={(e) => handleEditTitle(e.target.value)}
+								/>
+								<button type="submit" className="action-button">
+									✔️
+								</button>
+
+								<button
+									type="button"
+									className="delete-button"
+									onClick={handleDelete}
+								>
+									❌
+								</button>
+							</form>
+						</div>
+					</div>
 				</div>
-			</div>
-		</div>
+			)}
+		</>
 	);
-};
-
-TodoItem.propTypes = {
-	refreshTodoList: PropTypes.func.isRequired,
 };

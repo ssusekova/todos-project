@@ -1,14 +1,6 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-export const ControlPanel = ({ getSearchedTodos, getSortedList }) => {
-	const [searchText, setSearchText] = useState('');
-
-	const handleSearch = (searchedText) => {
-		setSearchText(searchedText);
-		getSearchedTodos(searchedText);
-	};
-
+export const ControlPanel = ({ isSorting, setIsSorting, searchText, setSearchText }) => {
 	return (
 		<div className="search-bar">
 			<input
@@ -16,15 +8,17 @@ export const ControlPanel = ({ getSearchedTodos, getSortedList }) => {
 				className="search-input"
 				placeholder="Поиск"
 				value={searchText}
-				onChange={(e) => handleSearch(e.target.value)}
+				onChange={(e) => setSearchText(e.target.value)}
 			/>
 
-			<button className="sort-button" onClick={getSortedList} />
+			<button className="sort-button" onClick={() => setIsSorting(!isSorting)} />
 		</div>
 	);
 };
 
 ControlPanel.propTypes = {
-	getSearchedTodos: PropTypes.func.isRequired,
-	getSortedList: PropTypes.func.isRequired,
+	isSorting: PropTypes.bool.isRequired,
+	setIsSorting: PropTypes.func.isRequired,
+	searchText: PropTypes.string.isRequired,
+	setSearchText: PropTypes.func.isRequired,
 };

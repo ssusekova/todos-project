@@ -1,17 +1,14 @@
-export const useRequestChangeStatusOfCompleteTodo = (setRefreshTodos) => {
-	const changeStatusOfCompleteTodo = (todoId, isCompleted) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({
-				completed: !isCompleted,
-			}),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Статус Todo обновлён, ответ сервера:', response);
-				setRefreshTodos();
-			});
+import { TodosAPI } from '../API/TodosAPI';
+
+export const useRequestChangeStatusOfCompleteTodo = () => {
+	const changeStatusOfCompleteTodo = async (id, completed) => {
+		try {
+			const changedTodo = await TodosAPI.update({ id, completed });
+			console.log('Статус Todo обновлён, ответ сервера:', changedTodo);
+			return changedTodo;
+		} catch (error) {
+			console.error('Ошибка при изменении статуса задачи:', error);
+		}
 	};
 
 	return { changeStatusOfCompleteTodo };

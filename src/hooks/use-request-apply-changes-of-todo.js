@@ -1,19 +1,14 @@
-export const useRequestApplyChangesOfTodo = (refreshItemInfo, refreshTodoList) => {
-	const applyChangesOfTodo = (todoId, editTodoTitle) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({
-				title: editTodoTitle,
-			}),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Todo обновлён, ответ сервера:', response);
-				refreshItemInfo();
-				refreshTodoList();
-			});
+import { TodosAPI } from '../API/TodosAPI';
+
+export const useRequestApplyChangesOfTodo = () => {
+	const changeTodo = async (todo) => {
+		try {
+			const response = await TodosAPI.update(todo);
+			console.log('Todo обновлён, ответ сервера:', response);
+		} catch (error) {
+			console.error('Ошибка при обновлении задачи:', error);
+		}
 	};
 
-	return { applyChangesOfTodo };
+	return { changeTodo };
 };

@@ -1,15 +1,18 @@
-export const useRequestDeleteTodo = (setRefreshTodos) => {
-	const deleteTodo = (todoId) => {
-		fetch('http://localhost:5050/todos/'.concat(todoId), {
-			method: 'DELETE',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Todo удален, ответ сервера:', response);
-				setRefreshTodos();
-			});
+import { useState } from 'react';
+import { TodosAPI } from '../API/TodosAPI';
+
+export const useRequestDeleteTodo = (id) => {
+	const [error, setError] = useState(null);
+
+	const deleteTodoById = async () => {
+		try {
+			const deletedTodo = await TodosAPI.delete(id);
+			console.log('Todo удален, ответ сервера:', deletedTodo);
+			return deletedTodo;
+		} catch (error) {
+			setError(error);
+		}
 	};
 
-	return { deleteTodo };
+	return { deleteTodoById, error };
 };

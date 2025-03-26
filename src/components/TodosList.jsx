@@ -1,14 +1,38 @@
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
-
+import { Link, useNavigate } from 'react-router';
+import { setTodoOnTodos, addTodoInTodos } from '../utils';
 import '../index.css';
 import { useRequestChangeStatusOfCompleteTodo, useRequestCreateNewTodo } from '../hooks';
 
-export const TodosList = ({ todos, isLoading, refreshTodoList, searchInfo }) => {
-	const { changeStatusOfCompleteTodo } =
-		useRequestChangeStatusOfCompleteTodo(refreshTodoList);
-	const { createNewTodo, newTodoTitle, setNewTodoTitle } =
-		useRequestCreateNewTodo(refreshTodoList);
+export const TodosList = ({ todos, setTodos, isLoading, error }) => {
+	const navigate = useNavigate();
+
+	const { changeStatusOfCompleteTodo } = useRequestChangeStatusOfCompleteTodo();
+	const { createNewTodo, newTodoTitle, setNewTodoTitle } = useRequestCreateNewTodo();
+
+	if (error) return navigate('/load-error');
+
+	const handleStatusChange = async (id, completed) => {
+		try {
+			const updatedTodo = await changeStatusOfCompleteTodo(id, !completed);
+
+			const newTodos = setTodoOnTodos(todos, updatedTodo);
+			setTodos(newTodos);
+		} catch {
+			navigate('/save-error');
+		}
+	};
+
+	const handleCreateTodo = async () => {
+		try {
+			const createdTodo = await createNewTodo();
+
+			const newTodos = addTodoInTodos(todos, createdTodo);
+			setTodos(newTodos);
+		} catch {
+			navigate('/save-error');
+		}
+	};
 
 	return (
 		<>
@@ -16,38 +40,34 @@ export const TodosList = ({ todos, isLoading, refreshTodoList, searchInfo }) => 
 				<div className="loader" />
 			) : (
 				<div className="todos-list">
-					{(searchInfo.isSearching ? searchInfo.searchedTodos : todos).map(
-						({ id, title, completed }) => (
-							<div
+					{todos.map(({ id, title, completed }) => (
+						<div
+							key={id}
+							className={`todo-item-in-list ${completed ? 'completed' : ''}`}
+						>
+							<input
+								type="checkbox"
 								key={id}
-								className={`todo-item ${completed ? 'completed' : ''}`}
-							>
-								<input
-									type="checkbox"
-									key={id}
-									checked={completed}
-									onChange={() =>
-										changeStatusOfCompleteTodo(id, completed)
-									}
-								/>
+								checked={completed}
+								onChange={() => handleStatusChange(id, completed)}
+							/>
 
-								<Link to={`task/${id}`} className="todo-text">
-									<input
-										type="text"
-										className="todo-text"
-										value={title}
-										readOnly
-									/>
-								</Link>
-							</div>
-						),
-					)}
+							<Link to={`task/${id}`} className="todo-text">
+								<input
+									type="text"
+									className="todo-text"
+									value={title}
+									readOnly
+								/>
+							</Link>
+						</div>
+					))}
 
 					<form
 						className="new-todo-item"
 						onSubmit={(e) => {
 							e.preventDefault();
-							createNewTodo(newTodoTitle);
+							handleCreateTodo();
 						}}
 					>
 						<input type="checkbox" readOnly />
@@ -68,7 +88,7 @@ export const TodosList = ({ todos, isLoading, refreshTodoList, searchInfo }) => 
 
 TodosList.propTypes = {
 	todos: PropTypes.array.isRequired,
+	setTodos: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
-	refreshTodoList: PropTypes.func.isRequired,
-	searchInfo: PropTypes.object.isRequired,
+	error: PropTypes.object.isRequired,
 };

@@ -1,25 +1,17 @@
 import { useState } from 'react';
+import { TodosAPI } from '../API/TodosAPI';
 
-export const useRequestCreateNewTodo = (setRefreshTodos) => {
+export const useRequestCreateNewTodo = () => {
 	const [newTodoTitle, setNewTodoTitle] = useState('');
 
-	const createNewTodo = (todoTitle) => {
-		if (!todoTitle) return;
-
-		fetch('http://localhost:5050/todos', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({
-				title: todoTitle,
-				completed: false,
-			}),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Todo создан, ответ сервера:', response);
-				setRefreshTodos();
-				setNewTodoTitle('');
-			});
+	const createNewTodo = async () => {
+		try {
+			const createdTodo = await TodosAPI.create(newTodoTitle);
+			console.log('Статус Todo создан, ответ сервера:', createdTodo);
+			return createdTodo;
+		} catch (error) {
+			console.error('Ошибка при создании задачи:', error);
+		}
 	};
 
 	return { createNewTodo, newTodoTitle, setNewTodoTitle };
