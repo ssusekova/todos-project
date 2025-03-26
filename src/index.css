@@ -51,7 +51,7 @@ body {
 	font-size: 16px;
 }
 
-.todo-item.completed input[type='text'] {
+.todo-item-in-list.completed input[type='text'] {
 	text-decoration: line-through;
 	color: #6c757d;
 }
