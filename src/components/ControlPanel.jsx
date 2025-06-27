@@ -1,24 +1,32 @@
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const ControlPanel = ({ isSorting, setIsSorting, searchText, setSearchText }) => {
+export const ControlPanel = () => {
+	const dispatch = useDispatch();
+	const searchPhrase = useSelector((state) => state.mainOperationsState.searchPhrase);
+
 	return (
 		<div className="search-bar">
 			<input
 				type="text"
 				className="search-input"
 				placeholder="Поиск"
-				value={searchText}
-				onChange={(e) => setSearchText(e.target.value)}
+				value={searchPhrase}
+				onChange={(e) =>
+					dispatch({
+						type: 'SET_SEARCH_PHRASE',
+						payload: e.target.value,
+					})
+				}
 			/>
 
-			<button className="sort-button" onClick={() => setIsSorting(!isSorting)} />
+			<button
+				className="sort-button"
+				onClick={() =>
+					dispatch({
+						type: 'SET_SORTING',
+					})
+				}
+			/>
 		</div>
 	);
-};
-
-ControlPanel.propTypes = {
-	isSorting: PropTypes.bool.isRequired,
-	setIsSorting: PropTypes.func.isRequired,
-	searchText: PropTypes.string.isRequired,
-	setSearchText: PropTypes.func.isRequired,
 };

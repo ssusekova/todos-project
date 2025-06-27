@@ -1,23 +1,32 @@
 import '../index.css';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { useRequestGetTodoItem } from '../hooks/use-request-get-todo-item';
-import { useRequestApplyChangesOfTodo, useRequestDeleteTodo } from '../hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeTodo, deleteTodo, getTodoItem } from '../actions';
 
 export const TodoItem = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const [editedTitle, setEditedTitle] = useState('');
 
-	const { todoItem, setTodoItem, isLoading, error } = useRequestGetTodoItem(id);
+	const todoItem = useSelector((state) => state.todosState.todoItem);
+	const isLoading = useSelector((state) => state.mainOperationsState.isLoading);
 
-	const { changeTodo } = useRequestApplyChangesOfTodo();
-	const { deleteTodoById } = useRequestDeleteTodo(id);
+	useEffect(() => {
+		dispatch(getTodoItem(id));
+	}, [dispatch]);
 
-	if (error) return navigate('/load-error');
+	useEffect(() => {
+		if (todoItem?.title) {
+			setEditedTitle(todoItem.title);
+		}
+	}, [todoItem?.title]);
 
 	const handleSave = (e) => {
 		try {
 			e.preventDefault();
-			changeTodo(todoItem);
+			dispatch(changeTodo({ ...todoItem, title: editedTitle }));
 		} catch {
 			navigate('/save-error');
 		}
@@ -25,7 +34,7 @@ export const TodoItem = () => {
 
 	const handleDelete = () => {
 		try {
-			deleteTodoById();
+			dispatch(deleteTodo(id));
 			navigate('/');
 		} catch {
 			navigate('/save-error');
@@ -33,10 +42,7 @@ export const TodoItem = () => {
 	};
 
 	const handleEditTitle = (newTitle) => {
-		setTodoItem((prevTodo) => ({
-			...prevTodo,
-			title: newTitle,
-		}));
+		setEditedTitle(newTitle);
 	};
 
 	return (
@@ -54,7 +60,7 @@ export const TodoItem = () => {
 							<form className="todo-form" onSubmit={handleSave}>
 								<textarea
 									className="todo-full-text"
-									value={todoItem?.title}
+									value={editedTitle}
 									onChange={(e) => handleEditTitle(e.target.value)}
 								/>
 								<button type="submit" className="action-button">

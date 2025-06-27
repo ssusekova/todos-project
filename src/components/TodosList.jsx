@@ -1,37 +1,29 @@
-import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router';
-import { setTodoOnTodos, addTodoInTodos } from '../utils';
+import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllTodos, changeStatusOfCompleteTodo, createNewTodo } from '../actions';
 import '../index.css';
-import { useRequestChangeStatusOfCompleteTodo, useRequestCreateNewTodo } from '../hooks';
 
-export const TodosList = ({ todos, setTodos, isLoading, error }) => {
-	const navigate = useNavigate();
+export const TodosList = () => {
+	const dispatch = useDispatch();
+	const todos = useSelector((state) => state.todosState.todos);
+	const isLoading = useSelector((state) => state.mainOperationsState.isLoading);
+	const isSorting = useSelector((state) => state.mainOperationsState.isSorting);
+	const searchPhrase = useSelector((state) => state.mainOperationsState.searchPhrase);
 
-	const { changeStatusOfCompleteTodo } = useRequestChangeStatusOfCompleteTodo();
-	const { createNewTodo, newTodoTitle, setNewTodoTitle } = useRequestCreateNewTodo();
+	const [newTodoTitle, setNewTodoTitle] = useState('');
 
-	if (error) return navigate('/load-error');
+	useEffect(() => {
+		dispatch(getAllTodos(isSorting, searchPhrase));
+	}, [dispatch, isSorting, searchPhrase]);
 
-	const handleStatusChange = async (id, completed) => {
-		try {
-			const updatedTodo = await changeStatusOfCompleteTodo(id, !completed);
-
-			const newTodos = setTodoOnTodos(todos, updatedTodo);
-			setTodos(newTodos);
-		} catch {
-			navigate('/save-error');
-		}
+	const handleStatusChange = (id, completed) => {
+		dispatch(changeStatusOfCompleteTodo(id, completed));
 	};
 
-	const handleCreateTodo = async () => {
-		try {
-			const createdTodo = await createNewTodo();
-
-			const newTodos = addTodoInTodos(todos, createdTodo);
-			setTodos(newTodos);
-		} catch {
-			navigate('/save-error');
-		}
+	const handleCreateTodo = () => {
+		dispatch(createNewTodo(newTodoTitle));
+		setNewTodoTitle('');
 	};
 
 	return (
@@ -49,7 +41,7 @@ export const TodosList = ({ todos, setTodos, isLoading, error }) => {
 								type="checkbox"
 								key={id}
 								checked={completed}
-								onChange={() => handleStatusChange(id, completed)}
+								onChange={() => handleStatusChange(id, !completed)}
 							/>
 
 							<Link to={`task/${id}`} className="todo-text">
@@ -84,11 +76,4 @@ export const TodosList = ({ todos, setTodos, isLoading, error }) => {
 			)}
 		</>
 	);
-};
-
-TodosList.propTypes = {
-	todos: PropTypes.array.isRequired,
-	setTodos: PropTypes.func.isRequired,
-	isLoading: PropTypes.bool.isRequired,
-	error: PropTypes.object.isRequired,
 };

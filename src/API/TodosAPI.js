@@ -2,7 +2,12 @@ import config from '../config.json';
 
 const TODOS_ENDPOINT = config.BASE_URL + 'todos/';
 
-const fetchServer = async (method = 'GET', { id, ...payload } = {}) => {
+const fetchServer = async (
+	method = 'GET',
+	{ id, ...payload } = {},
+	isSorting = false,
+	searchText = null,
+) => {
 	let url = TODOS_ENDPOINT;
 	if (id !== undefined) {
 		url += id;
@@ -17,12 +22,28 @@ const fetchServer = async (method = 'GET', { id, ...payload } = {}) => {
 		init.body = JSON.stringify(payload);
 	}
 
-	const response = await fetch(url, init);
-	return await response.json();
+	const rawResponse = await fetch(url, init);
+
+	const response = await rawResponse.json();
+
+	if (isSorting)
+		return isSorting
+			? response.toSorted((a, b) =>
+					a.title.toLowerCase().localeCompare(b.title.toLowerCase()),
+				)
+			: response;
+
+	if (searchText)
+		return response.filter((todo) =>
+			todo.title.toLowerCase().includes(searchText.toLowerCase()),
+		);
+
+	return response;
 };
 
 export const TodosAPI = {
-	fetchAll: async () => await fetchServer(),
+	fetchAll: async (isSorting, searchText) =>
+		await fetchServer('GET', {}, isSorting, searchText),
 	fetchItemById: async (id) => await fetchServer('GET', { id: id }),
 	create: async (title = '', completed = false) =>
 		await fetchServer('POST', { title, completed }),
